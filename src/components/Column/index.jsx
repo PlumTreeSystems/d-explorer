@@ -1,0 +1,30 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import Node, { nodeProps } from '../Node';
+import EmptyNode from '../EmptyNode';
+import './index.css'
+
+export default class Column extends React.PureComponent {
+    render(){
+        const { nodes } = this.props;
+        const content = nodes.map( (n, i) => {
+            if (n.isEmpty){
+                return (<EmptyNode key={i} {...n} />);
+            }
+            return (<Node key={i} {...n} />);
+        });
+        return (
+            <div style={{display: 'flex', border: 'solid 1px #000', width: '200px', flexDirection: 'column'}}>{content}</div>
+        );
+    }
+}
+
+Column.propTypes = {
+    nodes: PropTypes.arrayOf(PropTypes.oneOfType([
+        PropTypes.shape(nodeProps),
+        PropTypes.shape({
+            isEmpty: PropTypes.bool.isRequired,
+            type: PropTypes.string.isRequired
+        }) 
+    ])),
+};
