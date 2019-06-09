@@ -1,4 +1,5 @@
-export default (parent) => ({
+export default (parent, requestUrl) => ({
     type: 'LOAD_CHILDREN_NODES',
-    parent 
+    parent,
+    requestUrl
 });

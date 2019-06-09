@@ -1,0 +1,30 @@
+.Node__Container {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+    height: 34px;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    padding: 0 5px;
+    margin: 2px 0;
+}
+
+.Node__Container.disabled > .Node__Title {
+    color: #adadad;
+}
+
+.Node__Title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    font-size: 12pt;
+}
+
+.Node__ModalButtonContainer {
+    font-size: 20px;
+    display: flex;
+    padding: 4px;
+    cursor: pointer;
+}
