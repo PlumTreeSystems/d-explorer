@@ -14,11 +14,11 @@ import './styles.css';
 
 export class NodeMatrix extends React.PureComponent {
     componentDidMount() {
-        this.props.didMount();
+        this.props.didMount(this.props.sourceUrl);
     }
 
     render(){
-        const { root, open, maxColumnSize, loading, detailsUrl } = this.props;
+        const { root, maxColumnSize, loading } = this.props;
         const levels = root ? NodeExplorer.getLevels(NodeExplorer.clone(root)) : [];
         const balancedLevels = [];
 
