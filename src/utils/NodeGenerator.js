@@ -6,9 +6,10 @@ export default (number, parent) => {
         nodes = [...nodes, {
             id: id,
             title: id,
-            showChildren: false,
-            children: [],   
+            // showChildren: false,
+            // children: [],
             parent,
+            numberOfChildren: i,
         }];
     }
     return nodes;

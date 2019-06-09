@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './styles.css';
+
 export default class EmptyNode extends React.PureComponent {
     render() {
         const { type } = this.props;
@@ -9,19 +11,42 @@ export default class EmptyNode extends React.PureComponent {
                 symbol = " ";
                 break;
             case "pipe":
-                symbol = "|";
+                symbol = (
+                <div className="EmptyNode__SVGContainer">
+                    <svg viewBox={"0 0 100% 100%"} preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+                        <line x1="0" y1="0" x2="0" y2="100%" className="SVG_Line" />
+                    </svg>
+                </div>
+                );
                 break;
             case "line":
-                symbol = "|---------------------------->";
+                symbol = (
+                    <div className="EmptyNode__SVGContainer" >
+                        <svg viewBox={"0 0 100% 100%"} preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+                            <line x1="0" y1="0" x2="0" y2="100%" className="SVG_Line"/>
+                            <line x1="0" y1="50%" x2="100%" y2="50%" className="SVG_Line" />
+                        </svg>
+                    </div>
+                );
+                break;
+            case "last-line":
+                symbol = (
+                    <div className="EmptyNode__SVGContainer" >
+                        <svg viewBox={"0 0 100% 100%"} preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+                            <line x1="0" y1="0" x2="0" y2="50%" className="SVG_Line" />
+                            <line x1="0" y1="50%" x2="100%" y2="50%" className="SVG_Line" />
+                        </svg>
+                    </div>
+                );
                 break;
             default:
                 symbol = "-";
                 break;
         }
-        return (
 
-            <div style={{display: 'flex', justifyContent: 'space-between', alignContent: 'center', height: '20px'}}>
-                <div>{symbol}</div>
+        return (
+            <div className="EmptyNode__Container">
+                {symbol}
             </div>
         );
     }

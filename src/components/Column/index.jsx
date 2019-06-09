@@ -14,7 +14,7 @@ export default class Column extends React.PureComponent {
             return (<Node key={i} {...n} />);
         });
         return (
-            <div style={{display: 'flex', border: 'solid 1px #000', width: '200px', flexDirection: 'column'}}>{content}</div>
+            <div className="Column__Container">{content}</div>
         );
     }
 }
