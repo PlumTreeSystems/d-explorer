@@ -5,7 +5,6 @@ export default async (requestType, url) => {
 
     switch (requestType) {
         case requestName.GET_ROOT:
-            console.log(url);
             response = await axios.get(url);
             break;
         case requestName.GET_CHILDREN:
@@ -17,7 +16,6 @@ export default async (requestType, url) => {
             }
         }
     
-    console.log("request manager", response);
     return response.data;
 }
 

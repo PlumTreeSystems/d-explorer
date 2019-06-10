@@ -1,4 +1,4 @@
-export default (url) => ({
+export default (root) => ({
     type: 'LOAD_ROOT_NODE', 
-    requestUrl: url
+    data: {...root}
 });

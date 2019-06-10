@@ -10,11 +10,24 @@ import setLoadingAction from '../../actions/Loading/setLoadingAction';
 import setLoadedAction from '../../actions/Loading/setLoadedAction';
 import Spinner from '../Spinner';
 import Modal from './__Components/Modal';
+import RequestsManager, { requestName } from '../../utils/RequestsManager';
+
 import './styles.css';
 
 export class NodeMatrix extends React.PureComponent {
-    componentDidMount() {
-        this.props.didMount(this.props.sourceUrl);
+    async componentDidMount() {
+        const {
+            root, didMount, sourceUrl, setLoading, setLoaded,
+        } = this.props;
+
+        if (!root) {
+            setLoading();
+            const root = await RequestsManager(requestName.GET_ROOT, sourceUrl);
+            if (!root.errors) {
+                didMount(root);
+            }
+            setLoaded();
+        }
     }
 
     render(){
@@ -131,11 +144,15 @@ export default connect(
         sourceUrl: state.variables.sourceUrl,
     }),
     dispatch => ({
-        didMount: (url) => {
-            dispatch(setLoadingAction());
-            dispatch(loadRoot(url));
-            dispatch(setLoadedAction());
+        didMount:  (root) => {
+            dispatch(loadRoot(root));
         },
+        setLoading: () => {
+            dispatch(setLoadingAction());
+        },
+        setLoaded: () => {
+            dispatch(setLoadedAction());
+        }
     }),
 )(NodeMatrix);
 
@@ -143,4 +160,6 @@ NodeMatrix.propTypes = {
     width: PropTypes.number.isRequired,
     root: PropTypes.shape(nodeProps),
     maxColumnSize: PropTypes.number.isRequired,
+    setLoading: PropTypes.func.isRequired,
+    didMount: PropTypes.func.isRequired,
 };
