@@ -1,0 +1,6 @@
+.NodeMatrix__Container {
+    display: flex;
+    overflow: auto;
+    position: relative;
+    min-height: 70px;
+}

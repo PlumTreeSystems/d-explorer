@@ -8,8 +8,8 @@ import configureStore from './store/store.js';
 import setSourcesAction from './actions/setSourcesAction';
 
 const paths = {
-    sourceUrl: document.getElementById('root').getAttribute('data-source'),
-    detailsUrl: document.getElementById('root').getAttribute('data-details')
+    sourceUrl: document.getElementById('rootExplorer').getAttribute('data-source'),
+    detailsUrl: document.getElementById('rootExplorer').getAttribute('data-details')
 };
 
 const store = configureStore();
@@ -20,7 +20,7 @@ ReactDOM.render(
     <Provider store={store}>
         <App />
     </Provider>, 
-    document.getElementById('root')
+    document.getElementById('rootExplorer')
 );
 
 // If you want your app to work offline and load faster, you can change

@@ -120,18 +120,13 @@ export class NodeMatrix extends React.PureComponent {
 
         const cols = reducedBalancedLevels.map((level, i) => (<Column key={i} nodes={level.splice(empty)} />));
 
-        const content = (
-            <div style={{display: 'flex'}}>
+        return (
+            <div className="NodeMatrix__Container">
                 {cols}
                 <Modal />
+                { loading ? <Spinner /> : null }
             </div>
         );
-
-        const spinner = (
-            <Spinner />
-        );
-
-        return loading ? spinner : content;
     }
 }
 

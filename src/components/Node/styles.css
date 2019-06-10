@@ -27,7 +27,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 135px;
+    max-width: 130px;
+    padding-right: 5px;
 }
 
 .Node__ModalButtonContainer {

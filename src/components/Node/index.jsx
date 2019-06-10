@@ -24,15 +24,15 @@ export class Node extends React.PureComponent {
         
         if (numberOfChildren > 0) {
             setLoading();
-            let children = [];
+            let childrenResult = [];
 
             if (children.length === 0) {
                 const url = sourceUrl + `?id=` + id;
-                children = await RequestsManager(requestName.GET_CHILDREN, url);
+                childrenResult = await RequestsManager(requestName.GET_CHILDREN, url);
             }
             
-            if (!children.errors) {
-                onLoad(id, showChildren, children);
+            if (!childrenResult.errors) {
+                onLoad(id, showChildren, childrenResult);
             }
 
             setLoaded();

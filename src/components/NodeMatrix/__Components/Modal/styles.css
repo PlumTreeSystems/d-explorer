@@ -1,3 +1,9 @@
 .ModalElement__IframeContainer {
     margin-top: 35px;
 }
+
+.ModalElement__Iframe {
+    width: 400px;
+    height: 200px;
+    border: 0;
+}
