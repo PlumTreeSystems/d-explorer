@@ -1,32 +1,22 @@
 import axios from 'axios';
 
-export default (requestType, url) => {
+export default async (requestType, url) => {
+    let response = {};
+
     switch (requestType) {
-        case requestName.GET_CHILDREN:
-            axios.get(url)
-                .then(function (response) {
-                    return response;
-                })
-                .catch(function () {
-                    return {
-                        errors: ["Request failed"]
-                    };
-                });
         case requestName.GET_ROOT:
-            axios.get(url)
-                .then(function (response) {
-                    return response;
-                })
-                .catch(function () {
-                    return {
-                        errors: ["Request failed"]
-                    };
-                });
+            response = await axios.get(url);
+            break;
+        case requestName.GET_CHILDREN:
+            response = await axios.get(url);
+            break;
         default:
             return {
                 errors: ["Request not found"]
             }
-    }
+        }
+    
+    return response.data;
 }
 
 export const requestName = {

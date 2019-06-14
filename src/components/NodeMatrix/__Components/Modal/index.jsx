@@ -23,8 +23,7 @@ export class ModalElement extends React.PureComponent {
             >
                 <div className="ModalElement__IframeContainer">
                     <iframe
-                        width="100%"
-                        height="100%"
+                        className="ModalElement__Iframe"
                         src={detailsUrl + '/associate/info/' + id}>
                     </iframe>
                 </div>

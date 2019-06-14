@@ -10,15 +10,28 @@ import setLoadingAction from '../../actions/Loading/setLoadingAction';
 import setLoadedAction from '../../actions/Loading/setLoadedAction';
 import Spinner from '../Spinner';
 import Modal from './__Components/Modal';
+import RequestsManager, { requestName } from '../../utils/RequestsManager';
+
 import './styles.css';
 
 export class NodeMatrix extends React.PureComponent {
-    componentDidMount() {
-        this.props.didMount();
+    async componentDidMount() {
+        const {
+            root, didMount, sourceUrl, setLoading, setLoaded,
+        } = this.props;
+
+        if (!root) {
+            setLoading();
+            const root = await RequestsManager(requestName.GET_ROOT, sourceUrl);
+            if (!root.errors) {
+                didMount(root);
+            }
+            setLoaded();
+        }
     }
 
     render(){
-        const { root, open, maxColumnSize, loading, detailsUrl } = this.props;
+        const { root, maxColumnSize, loading } = this.props;
         const levels = root ? NodeExplorer.getLevels(NodeExplorer.clone(root)) : [];
         const balancedLevels = [];
 
@@ -107,18 +120,13 @@ export class NodeMatrix extends React.PureComponent {
 
         const cols = reducedBalancedLevels.map((level, i) => (<Column key={i} nodes={level.splice(empty)} />));
 
-        const content = (
-            <div style={{display: 'flex'}}>
+        return (
+            <div className="NodeMatrix__Container">
                 {cols}
                 <Modal />
+                { loading ? <Spinner /> : null }
             </div>
         );
-
-        const spinner = (
-            <Spinner />
-        );
-
-        return loading ? spinner : content;
     }
 }
 
@@ -131,11 +139,15 @@ export default connect(
         sourceUrl: state.variables.sourceUrl,
     }),
     dispatch => ({
-        didMount: (url) => {
-            dispatch(setLoadingAction());
-            dispatch(loadRoot(url));
-            dispatch(setLoadedAction());
+        didMount:  (root) => {
+            dispatch(loadRoot(root));
         },
+        setLoading: () => {
+            dispatch(setLoadingAction());
+        },
+        setLoaded: () => {
+            dispatch(setLoadedAction());
+        }
     }),
 )(NodeMatrix);
 
@@ -143,4 +155,6 @@ NodeMatrix.propTypes = {
     width: PropTypes.number.isRequired,
     root: PropTypes.shape(nodeProps),
     maxColumnSize: PropTypes.number.isRequired,
+    setLoading: PropTypes.func.isRequired,
+    didMount: PropTypes.func.isRequired,
 };

@@ -7,6 +7,7 @@ import setLoadedAction from '../../actions/Loading/setLoadedAction';
 import loadChildren from '../../actions/loadChildrenAction';
 import toggleChildren from '../../actions/toggleChildrenAction';
 import openModalAction from '../../actions/Modal/openModalAction';
+import RequestsManager, { requestName } from '../../utils/RequestsManager';
 
 import './styles.css';
 
@@ -15,13 +16,26 @@ export class Node extends React.PureComponent {
         this.props.openModalAction({enrolleeId: this.props.id})
     };
 
-    handleClick = () => {
+    handleClick = async () => {
         const {
             id, onLoad, showChildren, sourceUrl, numberOfChildren,
+            setLoading, setLoaded, children,
         } = this.props;
         
         if (numberOfChildren > 0) {
-            onLoad(id, showChildren, sourceUrl);
+            setLoading();
+            let childrenResult = [];
+
+            if (children.length === 0) {
+                const url = sourceUrl + `?id=` + id;
+                childrenResult = await RequestsManager(requestName.GET_CHILDREN, url);
+            }
+            
+            if (!childrenResult.errors) {
+                onLoad(id, showChildren, childrenResult);
+            }
+
+            setLoaded();
         }
     }
 
@@ -35,7 +49,9 @@ export class Node extends React.PureComponent {
 
         return (
             <div className={classList.join(' ')}>
-                <span onClick={() => this.handleClick()} className="Node__Title">{title} {numberOfChildren}</span>
+                <div onClick={() => this.handleClick()} className="Node__Title">
+                    <span>{title}</span> <span>{numberOfChildren}</span>
+                </div>
                 <div className="Node__ModalButtonContainer" onClick={this.onOpenModal}>
                     <i className="fa fa-external-link"></i>
                 </div>
@@ -56,6 +72,8 @@ export const nodeProps = {
         numberOfChildren: PropTypes.number.isRequired,
     })),
     sourceUrl: PropTypes.string,
+    setLoading: PropTypes.func.isRequired,
+    setLoaded: PropTypes.func.isRequired
 };
 nodeProps.children = PropTypes.arrayOf(PropTypes.shape(nodeProps).isRequired);
 
@@ -71,16 +89,16 @@ export default connect(
         sourceUrl: state.variables.sourceUrl,
     }),
     dispatch => ({
-        onLoad: (id, show, url) => {
+        onLoad: (id, show, children) => {
             if (show) {
                 dispatch(toggleChildren(id));
             } else {
-                dispatch(setLoadingAction());
-                dispatch(loadChildren(id, url));
+                dispatch(loadChildren(id, children));
                 dispatch(toggleChildren(id));
-                dispatch(setLoadedAction());
             }
         },
+        setLoading: () => { dispatch(setLoadingAction()); },
+        setLoaded: () => { dispatch(setLoadedAction()); },
         openModalAction: (enrolleeId) => dispatch(openModalAction(enrolleeId)),
     }),
 )(Node);
