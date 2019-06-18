@@ -7,6 +7,7 @@ import setLoadedAction from '../../actions/Loading/setLoadedAction';
 import loadChildren from '../../actions/loadChildrenAction';
 import toggleChildren from '../../actions/toggleChildrenAction';
 import openModalAction from '../../actions/Modal/openModalAction';
+import setFocus from '../../actions/setFocus';
 import RequestsManager, { requestName } from '../../utils/RequestsManager';
 
 import './styles.css';
@@ -16,7 +17,7 @@ export class Node extends React.PureComponent {
         this.props.openModalAction({enrolleeId: this.props.id})
     };
 
-    handleClick = async () => {
+    handleClick = async (nodeId) => {
         const {
             id, onLoad, showChildren, sourceUrl, numberOfChildren,
             setLoading, setLoaded, children,
@@ -36,21 +37,28 @@ export class Node extends React.PureComponent {
             }
 
             setLoaded();
+
+            this.props.setFocus(nodeId);
+
         }
     }
 
     render() {
-        const { title, numberOfChildren } = this.props;
+        const { title, numberOfChildren, id, focusNode, parent } = this.props;
         const classList = ['Node__Container'];
 
         if (numberOfChildren === 0) {
             classList.push('disabled');
         }
 
+        if (id === focusNode || parent == focusNode) {
+            classList.push('focus');
+        }
+
         return (
             <div className={classList.join(' ')}>
-                <div onClick={() => this.handleClick()} className="Node__Title">
-                    <span>{title}</span> <span>{numberOfChildren}</span>
+                <div onClick={() => this.handleClick(id)} className="Node__Title">
+                    <span>{title}</span><span>{parent}</span> <span>{id}</span> <span>{numberOfChildren}</span>
                 </div>
                 <div className="Node__ModalButtonContainer" onClick={this.onOpenModal}>
                     <i className="fa fa-external-link"></i>
@@ -87,6 +95,7 @@ Node.defaultProps = {
 export default connect(
     state => ({
         sourceUrl: state.variables.sourceUrl,
+        focusNode: state.variables.focusNode,
     }),
     dispatch => ({
         onLoad: (id, show, children) => {
@@ -100,5 +109,6 @@ export default connect(
         setLoading: () => { dispatch(setLoadingAction()); },
         setLoaded: () => { dispatch(setLoadedAction()); },
         openModalAction: (enrolleeId) => dispatch(openModalAction(enrolleeId)),
+        setFocus: (id) => { dispatch(setFocus(id)); },
     }),
 )(Node);

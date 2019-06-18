@@ -4,10 +4,15 @@
     align-content: center;
     align-items: center;
     height: 34px;
+    color: lightgrey;
     border: 1px solid lightgrey;
     border-radius: 5px;
     padding: 0 5px;
     margin: 2px 0;
+}
+
+.Node__Container.focus{
+    color: black;
 }
 
 .Node__Container.disabled > .Node__Title {

@@ -8,6 +8,7 @@ import loadRoot from '../../actions/loadRootNodeAction';
 import NodeExplorer from '../../utils/NodeExplorer';
 import setLoadingAction from '../../actions/Loading/setLoadingAction';
 import setLoadedAction from '../../actions/Loading/setLoadedAction';
+import addLevelWidth from '../../actions/addLevelWidth';
 import Spinner from '../Spinner';
 import Modal from './__Components/Modal';
 import RequestsManager, { requestName } from '../../utils/RequestsManager';
@@ -28,7 +29,17 @@ export class NodeMatrix extends React.PureComponent {
             }
             setLoaded();
         }
+
+        this.handleResize();
+        window.addEventListener('resize', this.handleResize);
     }
+
+    handleResize = (e) => {
+        const windowSize = window.innerWidth;
+        const windowWidth = windowSize / 200;
+        const levelWidth = Number((windowWidth).toFixed(0));
+        this.props.addLevelWidth(levelWidth);
+    };
 
     render(){
         const { root, maxColumnSize, loading } = this.props;
@@ -147,7 +158,10 @@ export default connect(
         },
         setLoaded: () => {
             dispatch(setLoadedAction());
-        }
+        },
+        addLevelWidth: (levelWidth) => {
+            dispatch(addLevelWidth(levelWidth));
+        },
     }),
 )(NodeMatrix);
 
