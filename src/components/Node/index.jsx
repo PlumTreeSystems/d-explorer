@@ -51,14 +51,18 @@ export class Node extends React.PureComponent {
             classList.push('disabled');
         }
 
-        if (id === focusNode || parent == focusNode) {
+        if (parent == focusNode) {
             classList.push('focus');
+        }
+
+        if (id === focusNode) {
+            classList.push('selected');
         }
 
         return (
             <div className={classList.join(' ')}>
                 <div onClick={() => this.handleClick(id)} className="Node__Title">
-                    <span>{title}</span><span>{parent}</span> <span>{id}</span> <span>{numberOfChildren}</span>
+                    <span>{title}</span> <span>{numberOfChildren}</span>
                 </div>
                 <div className="Node__ModalButtonContainer" onClick={this.onOpenModal}>
                     <i className="fa fa-external-link"></i>
