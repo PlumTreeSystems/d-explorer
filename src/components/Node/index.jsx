@@ -7,16 +7,23 @@ import setLoadedAction from '../../actions/Loading/setLoadedAction';
 import loadChildren from '../../actions/loadChildrenAction';
 import toggleChildren from '../../actions/toggleChildrenAction';
 import openModalAction from '../../actions/Modal/openModalAction';
+import setFocus from '../../actions/setFocus';
+import { Transition, animated, Spring } from 'react-spring/renderprops';
 import RequestsManager, { requestName } from '../../utils/RequestsManager';
 
 import './styles.css';
+
+
+//const animation = useSpring({opacity: 1, from: {opacity: 0}});
+
+//const AnimatedDonut = animated(animation);
 
 export class Node extends React.PureComponent {
     onOpenModal = () => {
         this.props.openModalAction({enrolleeId: this.props.id})
     };
 
-    handleClick = async () => {
+    handleClick = async (nodeId) => {
         const {
             id, onLoad, showChildren, sourceUrl, numberOfChildren,
             setLoading, setLoaded, children,
@@ -37,28 +44,63 @@ export class Node extends React.PureComponent {
 
             setLoaded();
         }
+
+        this.props.setFocus(nodeId);
+
     }
 
     render() {
-        const { title, numberOfChildren } = this.props;
+        const { title, numberOfChildren, id, focusNode, parent } = this.props;
         const classList = ['Node__Container'];
 
-        if (numberOfChildren === 0) {
+        if (numberOfChildren === 0 && id !== focusNode) {
             classList.push('disabled');
+        }
+        
+        if (parent == focusNode) {
+            classList.push('focus');
+        }
+
+        if (id === focusNode) {
+            classList.push('selected');
         }
 
         return (
-            <div className={classList.join(' ')}>
-                <div onClick={() => this.handleClick()} className="Node__Title">
-                    <span>{title}</span> <span>{numberOfChildren}</span>
-                </div>
-                <div className="Node__ModalButtonContainer" onClick={this.onOpenModal}>
-                    <i className="fa fa-external-link"></i>
-                </div>
-            </div>
+            <Transition
+                native
+                items={true}
+                from={{ opacity: 0, marginLeft: -500 }}
+                enter={{ opacity: 1, marginLeft: 0 }}
+                leave={{ opacity: 0, marginLeft: -500 }}
+            >
+                {show => show && (props => (
+                    <animated.div style={props}>
+                        <div className={classList.join(' ')}>
+                            <div onClick={() => this.handleClick(id)} className="Node__Title">
+                                <span>{title}</span>
+                                    <Spring
+                                        from={{ number: 0 }}
+                                        to={{ number: numberOfChildren }}
+                                        config={{ duration: 1000 }}
+                                    >
+                                    {props => (
+                                        <div style={props}>
+                                             {props.number.toFixed()}
+                                        </div>
+                                    )} 
+                                    </Spring>
+                            </div>
+                            <div className="Node__ModalButtonContainer" onClick={this.onOpenModal}>
+                                <i className="fa fa-external-link"></i>
+                            </div>
+                        </div> 
+                    </animated.div>
+                ))}
+            </Transition>     
         );
     }
 }
+
 
 export const nodeProps = {
     id: PropTypes.string.isRequired,
@@ -87,6 +129,7 @@ Node.defaultProps = {
 export default connect(
     state => ({
         sourceUrl: state.variables.sourceUrl,
+        focusNode: state.variables.focusNode,
     }),
     dispatch => ({
         onLoad: (id, show, children) => {
@@ -100,5 +143,6 @@ export default connect(
         setLoading: () => { dispatch(setLoadingAction()); },
         setLoaded: () => { dispatch(setLoadedAction()); },
         openModalAction: (enrolleeId) => dispatch(openModalAction(enrolleeId)),
+        setFocus: (id) => { dispatch(setFocus(id)); },
     }),
 )(Node);
