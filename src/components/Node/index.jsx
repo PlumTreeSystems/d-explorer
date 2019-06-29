@@ -12,8 +12,13 @@ import RequestsManager, { requestName } from '../../utils/RequestsManager';
 import './styles.css';
 
 export class Node extends React.PureComponent {
-    onOpenModal = () => {
-        this.props.openModalAction({enrolleeId: this.props.id})
+    onOpenInfo = () => {
+        if(this.props.infoInModal){
+            this.props.openModalAction({enrolleeId: this.props.id});
+        }
+        else {
+            window.open(this.props.detailsUrl + this.props.id, '_blank');
+        }
     };
 
     handleClick = async () => {
@@ -114,7 +119,7 @@ export class Node extends React.PureComponent {
                 <div onClick={() => this.handleClick()} className="Node__Title">
                     <span>{title}</span> <span>{numberOfChildren}</span>
                 </div>
-                <div className="Node__ModalButtonContainer" onClick={this.onOpenModal}>
+                <div className="Node__ModalButtonContainer" onClick={this.onOpenInfo}>
                     <i className="fa fa-external-link"></i>
                 </div>
             </div>
@@ -149,8 +154,10 @@ Node.defaultProps = {
 }
 
 export default connect(
-    (state, props) => ({        
+    (state) => ({        
         sourceUrl: state.variables.sourceUrl,
+        detailsUrl: state.variables.detailsUrl,
+        infoInModal: state.variables.inModal
     }),
     dispatch => ({
         onLoad: (id, show, children) => {

@@ -100,6 +100,10 @@ app.get("/api", (req, res, next) => {
     }
 });
 
+app.get("/info/:id", (req, res, next) => {
+    res.send('Info: ' + req.params.id);
+});
+
 app.listen(3030, () => {
  console.log("Server running on port 3030");
 });
