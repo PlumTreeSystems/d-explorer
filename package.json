@@ -13,6 +13,7 @@
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
+    "start-api": "node api-server/index.js",
     "start": "react-scripts start",
     "build": "react-scripts build && rm -rf dist/* && mv build/* dist && rm -rf build*",
     "test": "react-scripts test",

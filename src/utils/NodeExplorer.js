@@ -15,7 +15,7 @@ export default class NodeExplorer {
             node.children = [];
         }
 
-        node.children = [...node.children, ...children];        
+        node.children = [...(node.children.filter(c => !c.loadMoreNode)), ...children];        
     }
 
     toggleChildren(id){
