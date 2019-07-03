@@ -12,36 +12,103 @@ import RequestsManager, { requestName } from '../../utils/RequestsManager';
 import './styles.css';
 
 export class Node extends React.PureComponent {
-    onOpenModal = () => {
-        this.props.openModalAction({enrolleeId: this.props.id})
+    onOpenInfo = () => {
+        if(this.props.infoInModal){
+            this.props.openModalAction({enrolleeId: this.props.id});
+        }
+        else {
+            window.open(this.props.detailsUrl + this.props.id, '_blank');
+        }
     };
 
     handleClick = async () => {
         const {
             id, onLoad, showChildren, sourceUrl, numberOfChildren,
-            setLoading, setLoaded, children,
+            setLoading, setLoaded, children, onToggleChildren
+        } = this.props;
+
+        //hide
+        if (showChildren){
+            setLoading();
+            onToggleChildren(id);
+            setLoaded();
+            return;
+        }
+
+        const childrenLength = children.filter(c => !c.loadMoreNode).length;
+        
+        if (numberOfChildren > 0) {
+            setLoading();
+            let childrenResult = [];
+            let remainingChildren = 0;
+            if (childrenLength === 0) {
+                const url = sourceUrl + `?id=` + id;
+                childrenResult = await RequestsManager(requestName.GET_CHILDREN, url);
+                remainingChildren = numberOfChildren - childrenResult.length;
+            }else {
+                remainingChildren = numberOfChildren - childrenLength;
+            } 
+
+            if (!childrenResult.errors) {
+                if (remainingChildren !== 0){
+                    onLoad(id, showChildren, [...childrenResult, {
+                        loadMoreNode: true, 
+                        offset: numberOfChildren - remainingChildren, 
+                        parent: id, 
+                        id: 'load_'+ id, 
+                        numberOfChildren: remainingChildren 
+                    }]);
+                }else{
+                    onLoad(id, showChildren, childrenResult);
+                }
+            }
+            setLoaded();
+        }
+    }
+
+    handleLoadMoreClick = async () => {
+        const {
+            id, loadMore, sourceUrl, numberOfChildren,
+            setLoading, setLoaded, parent, offset
         } = this.props;
         
         if (numberOfChildren > 0) {
             setLoading();
             let childrenResult = [];
+            const url = `${sourceUrl}?id=${parent}&offset=${offset}`;
+            childrenResult = await RequestsManager(requestName.GET_CHILDREN, url);
 
-            if (children.length === 0) {
-                const url = sourceUrl + `?id=` + id;
-                childrenResult = await RequestsManager(requestName.GET_CHILDREN, url);
-            }
-            
             if (!childrenResult.errors) {
-                onLoad(id, showChildren, childrenResult);
+                if (childrenResult.length < numberOfChildren){
+                    const remainingChildren = numberOfChildren - childrenResult.length;
+                    loadMore(parent, [...childrenResult, {
+                        loadMoreNode: true, 
+                        offset: childrenResult.length + offset, 
+                        parent: parent, 
+                        id: 'load_'+ parent, 
+                        numberOfChildren: remainingChildren 
+                    }]);
+                }else{
+                    loadMore(parent, childrenResult);
+                }
             }
-
             setLoaded();
         }
     }
 
     render() {
-        const { title, numberOfChildren } = this.props;
+        const { title, numberOfChildren, loadMoreNode } = this.props;
         const classList = ['Node__Container'];
+
+        if(loadMoreNode){
+            return (
+                <div className={classList.join(' ')}>
+                    <div onClick={() => this.handleLoadMoreClick()} className="LoadMoreNode__Title">
+                        <span>Load More</span>
+                    </div>
+                </div>
+            );
+        }
 
         if (numberOfChildren === 0) {
             classList.push('disabled');
@@ -52,7 +119,7 @@ export class Node extends React.PureComponent {
                 <div onClick={() => this.handleClick()} className="Node__Title">
                     <span>{title}</span> <span>{numberOfChildren}</span>
                 </div>
-                <div className="Node__ModalButtonContainer" onClick={this.onOpenModal}>
+                <div className="Node__ModalButtonContainer" onClick={this.onOpenInfo}>
                     <i className="fa fa-external-link"></i>
                 </div>
             </div>
@@ -62,6 +129,8 @@ export class Node extends React.PureComponent {
 
 export const nodeProps = {
     id: PropTypes.string.isRequired,
+    loadMoreNode: PropTypes.bool,
+    offset: PropTypes.number,
     parent: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     showChildren: PropTypes.bool,
@@ -85,8 +154,10 @@ Node.defaultProps = {
 }
 
 export default connect(
-    state => ({
+    (state) => ({        
         sourceUrl: state.variables.sourceUrl,
+        detailsUrl: state.variables.detailsUrl,
+        infoInModal: state.variables.inModal
     }),
     dispatch => ({
         onLoad: (id, show, children) => {
@@ -97,6 +168,8 @@ export default connect(
                 dispatch(toggleChildren(id));
             }
         },
+        onToggleChildren: (id) => dispatch(toggleChildren(id)),
+        loadMore: (id, children) => dispatch(loadChildren(id, children)),
         setLoading: () => { dispatch(setLoadingAction()); },
         setLoaded: () => { dispatch(setLoadedAction()); },
         openModalAction: (enrolleeId) => dispatch(openModalAction(enrolleeId)),

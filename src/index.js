@@ -9,7 +9,8 @@ import setSourcesAction from './actions/setSourcesAction';
 
 const paths = {
     sourceUrl: document.getElementById('rootExplorer').getAttribute('data-source'),
-    detailsUrl: document.getElementById('rootExplorer').getAttribute('data-details')
+    detailsUrl: document.getElementById('rootExplorer').getAttribute('data-details'),
+    inModal: document.getElementById('rootExplorer').getAttribute('data-detailsInModal') == "false" ? false : true,
 };
 
 const store = configureStore();

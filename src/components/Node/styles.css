@@ -14,7 +14,7 @@
     color: #adadad;
 }
 
-.Node__Title {
+.Node__Title,.LoadMoreNode__Title {
     display: flex;
     width: 100%;
     padding-right: 5px;
@@ -36,4 +36,7 @@
     display: flex;
     padding: 4px;
     cursor: pointer;
+}
+.LoadMoreNode__Title {
+    justify-content: center;
 }

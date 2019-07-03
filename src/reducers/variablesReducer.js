@@ -7,6 +7,7 @@ const defaultState = {
     loading: false,
     sourceUrl: '',
     detailsUrl: '',
+    inModal: true,
 }
 
 export default (state = defaultState, action) => {
